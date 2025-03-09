@@ -1,0 +1,23 @@
+localhost:19000 running kafdrop dashboard
+
+
+make up: run the entire system -> database, kafka and server
+make down: shut down the system
+make enter-postgres: enter the postgres database to run SQL commands
+make help: if there is any doubt, refer to this
+
+
+
+Increase the # of partitions
+docker exec -it <kafka-container-name> kafka-topics --bootstrap-server localhost:9092 --alter --topic <topic-name> --partitions <new-partition-count>
+
+# Verify the changes
+docker exec -it <kafka-container-name> kafka-topics --bootstrap-server localhost:9092 --describe --topic <topic-name>
+
+# Create a topic
+docker exec -it kafka1 kafka-topics --bootstrap-server localhost:9092 --create --topic topic-1 --partitions 2 --replication-factor 1
+
+
+
+
+If we have X partitions, we can have X servers running in parallel processing each single partition. This is ditributed load balanced data
