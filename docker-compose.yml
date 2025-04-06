@@ -47,11 +47,32 @@ services:
     environment:
       KAFKA_BROKERCONNECT: kafka1:29092
 
-  postgres:
-    image: postgres:13.4
-    container_name: postgres
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+  # postgres:
+  #   image: postgres:13.4
+  #   container_name: postgres
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  
+  # producer:
+  #   build:
+  #     context: .
+  #     dockerfile: producer/Dockerfile
+  #   depends_on:
+  #     - kafka1
+
+  # preprocessor:
+  #   build:
+  #     context: .
+  #     dockerfile: preprocessor/Dockerfile
+  #   depends_on:
+  #     - kafka1
+
+  # loader:
+  #   build:
+  #     context: .
+  #     dockerfile: loader/Dockerfile
+  #   depends_on:
+  #     - kafka1

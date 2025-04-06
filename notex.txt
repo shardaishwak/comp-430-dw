@@ -21,3 +21,5 @@ docker exec -it kafka1 kafka-topics --bootstrap-server localhost:9092 --create -
 
 
 If we have X partitions, we can have X servers running in parallel processing each single partition. This is ditributed load balanced data
+
+KEY: a0006cc125ffe8010989fb8ccff8712b

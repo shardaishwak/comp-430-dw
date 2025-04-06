@@ -7,8 +7,6 @@ GRAPHQL_URL = f"https://gateway.thegraph.com/api/{API_KEY}/subgraphs/id/5zvR82Qo
 GRAPHQL_URL_2 = f"https://gateway.thegraph.com/api/{API_KEY}/subgraphs/id/G1pPbbMjwCnFiyMherq8wqfMusZDriLMqvGBHLr2wS34"
 
 
-
-
 def getTick():
   query = """
   query MyQuery {
@@ -66,10 +64,9 @@ def getTick():
     "trading_volume": d[0]['volumeToken1'],
     "transaction_count": d[0]['txCount'],
     "timestamp": d[0]['periodStartUnix'],
-    "cumulative_supply": float(d_2[0]['netCumulativeVolume']) if float(d_2[0]['netCumulativeVolume']) > 0 else float(d_2[1]['netCumulativeVolume']),
+    "circulating_supply": float(d_2[0]['netCumulativeVolume']) if float(d_2[0]['netCumulativeVolume']) > 0 else float(d_2[1]['netCumulativeVolume']),
   }
 
   return response
 
 
-pprint(getTick())
