@@ -3,27 +3,12 @@ import json
 import sys 
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from common.kafka_utils import TopicsEnum, get_broker, get_producer
+from common.kafka_utils import TopicsEnum, get_broker, get_producer, get_connection
 import pandas as pd
 import numpy as np
 import os
-import psycopg2
 import datetime
-from record import getTick
-
-pg_host = os.environ.get("PG_HOST", "localhost")
-pg_port = os.environ.get("PG_PORT", "5432")
-pg_database = os.environ.get("PG_DATABASE", "comp430project")
-pg_user = os.environ.get("PG_USER", "")
-pg_password = os.environ.get("PG_PASSWORD", "")
-
-conn = psycopg2.connect(
-    host=pg_host,
-    port=pg_port,
-    database=pg_database,
-    user=pg_user,
-    password=pg_password
-)
+conn = get_connection()
 cursor = conn.cursor()
 print("Connected to PostgreSQL database!")
 
@@ -75,7 +60,7 @@ def digest(new_record):
     global conn, cursor
     
     new_dt = datetime.datetime.fromtimestamp(new_record["timestamp"])
-    new_date_key = int(new_dt.strftime('%Y%m%d%S'))
+    new_date_key = int(new_dt.strftime('%Y%m%d%H'))
     new_record["date_key"] = new_date_key
     
     historical_query = """
@@ -90,7 +75,7 @@ def digest(new_record):
     
     if not historical_df.empty:
         historical_df["timestamp"] = historical_df["date_key"].astype(str).apply(
-            lambda x: datetime.datetime.strptime(x, '%Y%m%d%S').timestamp()
+            lambda x: datetime.datetime.strptime(x, '%Y%m%d%H').timestamp()
         )
     else:
         historical_df["timestamp"] = pd.Series(dtype=float)
@@ -104,6 +89,7 @@ def digest(new_record):
     date_str = str(updated_new_record["date_key"])
     dt_date = datetime.datetime.strptime(date_str, '%Y%m%d%H')
     year, month, day, hour = dt_date.year, dt_date.month, dt_date.day, dt_date.hour
+    print(year, month, day, hour)
     quarter = (month - 1) // 3 + 1
     day_of_week = dt_date.weekday()
     
@@ -129,7 +115,8 @@ def digest(new_record):
     
     circulating_supply = nannull(updated_new_record["circulating_supply"])
     close_price = nannull(updated_new_record["close_price"])
-    market_cap = circulating_supply * close_price if circulating_supply is not None and close_price is not None else None
+    print(circulating_supply, close_price)
+    market_cap = circulating_supply * close_price/1000 if circulating_supply is not None and close_price is not None else None
 
     trading_volume_val = float(updated_new_record["trading_volume"]) if isinstance(updated_new_record["trading_volume"], (str, np.generic)) else updated_new_record["trading_volume"]
     close_price_val = float(updated_new_record["close_price"]) if isinstance(updated_new_record["close_price"], (str, np.generic)) else updated_new_record["close_price"]
